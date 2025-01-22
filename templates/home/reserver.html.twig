@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+    <h2 class="text-center">Louer un véhicule</h2>
+
+  
+    <img class="card-img-top img-fluid w-25" src="{{asset(vehicule.imgUrl)}}" alt="Card image cap">
+
+    <h5 class="card-title">{{ vehicule.marque }}</h5>
+    
+    <strong> Prix Journalier : {{ vehicule.prix }}€</strong>
+
+    <hr>
+
+    {{ form_start(form) }}
+        <div class="col-6">
+            {{ form_row(form.date_debut) }}
+            {{ form_row(form.date_fin) }}
+        </div>
+    <input type="hidden" value="{{ vehicule.id }}" name="vehicule">
+    <input type="hidden" value="{{ app.user.id }}" name="client">
+
+    <button type="submit" class="btn btn-success">Réserver</button>
+
+    {{ form_end(form) }}
+
+   
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+    <h2 class="text-center">Louer un véhicule</h2>
+
+    <div class="row">
+        {% for vehicule in vehicules %}
+            <div class="card col-4 m-2" style="width: 18rem;">
+                <img class="card-img-top img-fluid" src="{{asset(vehicule.imgUrl)}}" alt="Card image cap">
+                <div class="card-body">
+                <h5 class="card-title">{{ vehicule.marque }}</h5>
+                <p class="card-text">
+                    <strong> Prix Journalier : {{ vehicule.prix }}€</strong>
+                </p>
+                <a href="{{ path('app_client_vehicule', {'id': vehicule.id}) }}" class="btn btn-primary">Réserver</a>
+                </div>
+            </div>
+        {% endfor %}    
+    </div>
+
+{% endblock %}
