@@ -10,22 +10,53 @@
 
     <h5 class="card-title">{{ vehicule.marque }}</h5>
     
-    <strong> Prix Journalier : {{ vehicule.prix }}€</strong>
+    <strong> Prix Journalier : <span id="prix">{{ vehicule.prix }}</span>€</strong>
 
     <hr>
+
+    <div id="total"></div>
 
     {{ form_start(form) }}
         <div class="col-6">
             {{ form_row(form.date_debut) }}
             {{ form_row(form.date_fin) }}
+            <input type="text" readonly id="prixReservation" name="prixReservation">
         </div>
-    <input type="hidden" value="{{ vehicule.id }}" name="vehicule">
-    <input type="hidden" value="{{ app.user.id }}" name="client">
 
     <button type="submit" class="btn btn-success">Réserver</button>
 
     {{ form_end(form) }}
 
-   
+   <script>
+        let debut = document.getElementById("reservation_date_debut");
+        let fin = document.getElementById("reservation_date_fin");
+
+        debut.addEventListener("change", () => {
+            fin.min = debut.value
+
+            fin.addEventListener("change", () => {
+                console.log(debut.value)
+                fin.min = fin.value
+
+                j = nbJour(debut.value, fin.value)
+                prix = document.getElementById("prix").innerText
+                total = document.getElementById("total")
+               // total.classList.toggle("alert arlet-info")
+                total.innerHTML = '<div class="alert alert-primary"> Pour ' + j +" ça fait: " + (prix * j) +  ' €</div>'
+
+                document.getElementById("prixReservation").value = (prix * j) 
+
+            })
+        })
+
+        function nbJour(d1, d2){
+            date1 = new Date(d1);
+            date2 = new Date(d2);
+
+            return Math.ceil( (date2-date1)/86400000 )
+        }
+        
+
+   </script>
 
 {% endblock %}

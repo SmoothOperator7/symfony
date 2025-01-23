@@ -25,14 +25,13 @@ final class CompteController extends AbstractController
         $form = $this->createForm(ReservationType::class, $reserver);
 
         $form->remove('prix');
-        $form->remove('prix');
         $form->remove('vehicule');
         $form->remove('client');
 
         $form->handleRequest($request);
 
         if( $form->isSubmitted() ){
-            $reserver->setPrix(750);
+            $reserver->setPrix( $request->get('prixReservation') );
             $reserver->setClient($this->getUser());
             $reserver->setVehicule($vehicule);
 
