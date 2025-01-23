@@ -21,7 +21,7 @@ final class CompteController extends AbstractController
     public function client(Vehicule $vehicule, Request $request, EntityManagerInterface $manager): Response
     {
         $reserver = new Reservation;
-
+        $commentaires = $vehicule->getCommentaires();
         $form = $this->createForm(ReservationType::class, $reserver);
 
         $form->remove('prix');
@@ -39,9 +39,14 @@ final class CompteController extends AbstractController
             $manager->flush();
         }
 
-
+        //if ($formCommentaire->isSubmitted)   )
+        /*{
+            $commentaires...
+        }*/
+        
         return $this->render('home/reserver.html.twig', [
             "vehicule" => $vehicule,
+            "commentaires" => $commentaires,
             "form" => $form
         ]);
     }

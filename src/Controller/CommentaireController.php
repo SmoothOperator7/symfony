@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/commentaire')]
+#[Route('/commentaire')]
 final class CommentaireController extends AbstractController
 {
     #[Route(name: 'app_commentaire_index', methods: ['GET'])]

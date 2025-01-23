@@ -5,13 +5,17 @@
 {% block body %}
     <h2 class="text-center">Louer un véhicule</h2>
 
-  
     <img class="card-img-top img-fluid w-25" src="{{asset(vehicule.imgUrl)}}" alt="Card image cap">
 
     <h5 class="card-title">{{ vehicule.marque }}</h5>
     
     <strong> Prix Journalier : <span id="prix">{{ vehicule.prix }}</span>€</strong>
-
+    </br>
+    <h2>
+  <button class="btn {{ vehicule.statut ? 'btn-success' : 'btn-danger' }}">
+    {{ vehicule.statut ? 'Disponible' : 'Non Disponible' }}
+  </button>
+</h2>
     <hr>
 
     <div id="total"></div>
@@ -22,10 +26,35 @@
             {{ form_row(form.date_fin) }}
             <input type="text" readonly id="prixReservation" name="prixReservation">
         </div>
-
+    </br>
     <button type="submit" class="btn btn-success">Réserver</button>
 
-    {{ form_end(form) }}
+    <h2>Commentaires</h2>
+</br>
+
+    <a href="{{ path('app_commentaire_new') }}" type="button" class="btn btn-primary"> Commenter ce véhicule </a>
+    </br>
+    {% if vehicule.commentaires is not empty %}
+    <h2>Les commentaires sur ce véhicule : </h2>
+    </br>
+        <ul class="list-group">
+            {% for commentaire in vehicule.commentaires %}
+                <li class="list-group-item">
+                    <p>{{ commentaire.content }}</p> 
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun commentaire pour ce véhicule.</p>
+    {% endif %}
+
+
+   <!-- { { form_start(formCommentaire) }} 
+        { { form_row(formCommentaire.content) }} 
+        <button class="btn btn-primary">Envoyer</button>
+    { { form_end(formCommentaire) }}
+
+    { { form_end(form) }} -->
 
    <script>
         let debut = document.getElementById("reservation_date_debut");

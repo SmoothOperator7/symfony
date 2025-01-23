@@ -15,7 +15,12 @@
                     <strong> Prix Journalier : {{ vehicule.prix }}€</strong>
                 </p>
                 <a href="{{ path('app_client_vehicule', {'id': vehicule.id}) }}" class="btn btn-primary">Réserver</a>
+                                  
+            <button class="btn {{ vehicule.statut ? 'btn-success' : 'btn-danger' }}">
+    {{ vehicule.statut ? 'Disponible' : 'Non Disponible' }}
+  </button>
                 </div>
+
             </div>
         {% endfor %}    
     </div>
