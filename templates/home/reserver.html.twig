@@ -1,42 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Réserver un véhicule{% endblock %}
 
 {% block body %}
     <h2 class="text-center">Louer un véhicule</h2>
 
-    <img class="card-img-top img-fluid w-25" src="{{asset(vehicule.imgUrl)}}" alt="Card image cap">
+    <img class="card-img-top img-fluid w-25" src="{{ asset(vehicule.imgUrl) }}" alt="Image du véhicule">
 
     <h5 class="card-title">{{ vehicule.marque }}</h5>
     
     <strong> Prix Journalier : <span id="prix">{{ vehicule.prix }}</span>€</strong>
     </br>
     <h2>
-  <button class="btn {{ vehicule.statut ? 'btn-success' : 'btn-danger' }}">
-    {{ vehicule.statut ? 'Disponible' : 'Non Disponible' }}
-  </button>
-</h2>
+        <button class="btn {{ vehicule.statut ? 'btn-success' : 'btn-danger' }}">
+            {{ vehicule.statut ? 'Disponible' : 'Non Disponible' }}
+        </button>
+    </h2>
     <hr>
 
+    <div id="notification"></div> <!-- Notification pour informer l'utilisateur -->
     <div id="total"></div>
 
     {{ form_start(form) }}
         <div class="col-6">
             {{ form_row(form.date_debut) }}
             {{ form_row(form.date_fin) }}
-            <input type="text" readonly id="prixReservation" name="prixReservation">
+            <input type="text" readonly id="prixReservation" name="prixReservation" class="form-control">
         </div>
-    </br>
-    <button type="submit" class="btn btn-success">Réserver</button>
+        </br>
+        <button type="submit" class="btn btn-success">Réserver</button>
+    {{ form_end(form) }}
 
     <h2>Commentaires</h2>
-</br>
+    </br>
 
     <a href="{{ path('app_commentaire_new') }}" type="button" class="btn btn-primary"> Commenter ce véhicule </a>
     </br>
     {% if vehicule.commentaires is not empty %}
-    <h2>Les commentaires sur ce véhicule : </h2>
-    </br>
+        <h2>Les commentaires sur ce véhicule :</h2>
+        </br>
         <ul class="list-group">
             {% for commentaire in vehicule.commentaires %}
                 <li class="list-group-item">
@@ -48,44 +50,55 @@
         <p>Aucun commentaire pour ce véhicule.</p>
     {% endif %}
 
-
-   <!-- { { form_start(formCommentaire) }} 
-        { { form_row(formCommentaire.content) }} 
-        <button class="btn btn-primary">Envoyer</button>
-    { { form_end(formCommentaire) }}
-
-    { { form_end(form) }} -->
-
-   <script>
+    <script>
+        // Gestion des dates et du calcul du prix
         let debut = document.getElementById("reservation_date_debut");
         let fin = document.getElementById("reservation_date_fin");
 
         debut.addEventListener("change", () => {
-            fin.min = debut.value
+            fin.min = debut.value;
 
             fin.addEventListener("change", () => {
-                console.log(debut.value)
-                fin.min = fin.value
+                let jours = nbJour(debut.value, fin.value);
+                let prixParJour = parseFloat(document.getElementById("prix").innerText);
+                let totalElement = document.getElementById("total");
+                let notificationElement = document.getElementById("notification");
+                
+                let totalPrix = prixParJour * jours;
 
-                j = nbJour(debut.value, fin.value)
-                prix = document.getElementById("prix").innerText
-                total = document.getElementById("total")
-               // total.classList.toggle("alert arlet-info")
-                total.innerHTML = '<div class="alert alert-primary"> Pour ' + j +" ça fait: " + (prix * j) +  ' €</div>'
+                // Appliquer une réduction si le total dépasse 400 €
+                let reductionAppliquee = false;
+                if (totalPrix >= 400) {
+                    totalPrix *= 0.9; // Réduction de 10 %
+                    reductionAppliquee = true;
+                }
 
-                document.getElementById("prixReservation").value = (prix * j) 
+                // Mise à jour du DOM
+                totalElement.innerHTML = `
+                    <div class="alert alert-primary">
+                        Total pour ${jours} jour(s) : <strong>${totalPrix.toFixed(2)} €</strong>
+                    </div>
+                `;
+                document.getElementById("prixReservation").value = totalPrix.toFixed(2);
 
-            })
-        })
+                // Afficher une notification si réduction appliquée
+                if (reductionAppliquee) {
+                    notificationElement.innerHTML = `
+                        <div class="alert alert-success">
+                            Une réduction de 10 % a été appliquée car le total dépasse 400 €.
+                        </div>
+                    `;
+                } else {
+                    notificationElement.innerHTML = ''; // Efface la notification si pas de réduction
+                }
+            });
+        });
 
-        function nbJour(d1, d2){
-            date1 = new Date(d1);
-            date2 = new Date(d2);
+        function nbJour(d1, d2) {
+            let date1 = new Date(d1);
+            let date2 = new Date(d2);
 
-            return Math.ceil( (date2-date1)/86400000 )
+            return Math.ceil((date2 - date1) / 86400000); // Conversion en jours
         }
-        
-
-   </script>
-
+    </script>
 {% endblock %}

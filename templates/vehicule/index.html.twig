@@ -1,46 +1,69 @@
 {% extends 'base.html.twig' %}
-{% block title %}Vehicule index{% endblock %}
+{% block title %}Liste des véhicules{% endblock %}
 
 {% block body %}
-    <h1>Vehicule index</h1>
+    <h1>Liste des véhicules</h1>
 
-    <table class="table">
+    <!-- Affichage des messages flash -->
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <!-- Table des véhicules -->
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Img</th>
+                <th>Image</th>
                 <th>Marque</th>
-                <th>Modele</th>
-                <th>Immatricule</th>
+                <th>Modèle</th>
+                <th>Immatriculation</th>
                 <th>Type</th>
-                <th>Prix</th>
+                <th>Prix (€)</th>
                 <th>Statut</th>
-                <th>actions</th>
+                <th>Réservations</th> <!-- Colonne pour les réservations -->
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for vehicule in vehicules %}
             <tr>
-                <td style="padding: 0%; width: 25%;;">
-                    <img src="{{ asset(vehicule.imgUrl) }}" alt="" class="p-0 img-fluid w-25" style="padding: 0;">
+                <td style="width: 25%;">
+                    <img src="{{ asset(vehicule.imgUrl ?: 'default-image.jpg') }}" alt="Image du véhicule" class="img-fluid w-50">
                 </td>
-                <td>{{ vehicule.marque }}</td>
-                <td>{{ vehicule.modele }}</td>
-                <td>{{ vehicule.immatricule }}</td>
-                <td>{{ vehicule.type }}</td>
-                <td>{{ vehicule.prix }}</td>
-                <td>{{ vehicule.statut ? 'Yes' : 'No' }}</td>
+                <td>{{ vehicule.marque ?: 'Non spécifiée' }}</td>
+                <td>{{ vehicule.modele ?: 'Non spécifié' }}</td>
+                <td>{{ vehicule.immatricule ?: 'Non spécifiée' }}</td>
+                <td>{{ vehicule.type ?: 'Non spécifié' }}</td>
+                <td>{{ vehicule.prix ?: 'Non défini' }}</td>
                 <td>
-                    <a href="{{ path('app_vehicule_show', {'id': vehicule.id}) }}">show</a>
-                    <a href="{{ path('app_vehicule_edit', {'id': vehicule.id}) }}">edit</a>
+                    <span class="badge {{ vehicule.statut ? 'bg-success' : 'bg-danger' }}">
+                        {{ vehicule.statut ? 'Disponible' : 'Indisponible' }}
+                    </span>
+                </td>
+                <td>
+                    {{ vehiculeReservations[vehicule.id] ?? 0 }} <!-- Nombre de réservations -->
+                </td>
+                <td>
+                    <a href="{{ path('app_vehicule_show', {'id': vehicule.id}) }}" class="btn btn-info btn-sm">Afficher</a>
+                    <a href="{{ path('app_vehicule_edit', {'id': vehicule.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    <form method="post" action="{{ path('app_vehicule_delete', {'id': vehicule.id}) }}" style="display: inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vehicule.id) }}">
+                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">no records found</td>
+                <td colspan="9" class="text-center">Aucun véhicule trouvé.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_vehicule_new') }}">Create new</a>
+    <!-- Lien pour ajouter un nouveau véhicule -->
+    <a href="{{ path('app_vehicule_new') }}" class="btn btn-primary">Ajouter un nouveau véhicule</a>
 {% endblock %}

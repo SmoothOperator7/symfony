@@ -1,11 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Reservation{% endblock %}
+{% block title %}Nouvelle Réservation{% endblock %}
 
 {% block body %}
-    <h1>Create new Reservation</h1>
+    <h1>Créer une nouvelle réservation</h1>
 
-    {{ include('reservation/_form.html.twig') }}
+    <!-- Affichage des messages Flash pour les erreurs ou succès -->
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
 
-    <a href="{{ path('app_reservation_index') }}">back to list</a>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <!-- Formulaire de réservation -->
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_row(form.date_debut, {'attr': {'placeholder': 'Date de début'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.date_fin, {'attr': {'placeholder': 'Date de fin'}}) }}
+        </div>
+        <div class="form-group">
+            <label for="prix">Prix Total :</label>
+            <input type="text" class="form-control" id="prix" value="{{ reservation.prix }}" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary">Réserver</button>
+    {{ form_end(form) }}
+
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Récupérer les dates réservées passées par le backend
+        const reservedDates = JSON.parse(
+            document.querySelector('[data-reserved-dates]').getAttribute('data-reserved-dates')
+        );
+
+        const dateDebutInput = document.getElementById('reservation_date_debut');
+        const dateFinInput = document.getElementById('reservation_date_fin');
+
+        function isReserved(date) {
+            return reservedDates.includes(date);
+        }
+
+        dateDebutInput.addEventListener('change', function () {
+            if (isReserved(this.value)) {
+                alert('Cette date est déjà réservée. Veuillez en choisir une autre.');
+                this.value = '';
+            } else {
+                dateFinInput.min = this.value;
+            }
+        });
+
+        dateFinInput.addEventListener('change', function () {
+            if (isReserved(this.value)) {
+                alert('Cette date est déjà réservée. Veuillez en choisir une autre.');
+                this.value = '';
+            }
+        });
+    });
+</script>
+
 {% endblock %}

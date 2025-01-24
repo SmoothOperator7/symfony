@@ -92,4 +92,11 @@ class Reservation
 
         return $this;
     }
+    
+    public function applyDiscount(): void
+    {
+        if ($this->prix >= 400) {
+            $this->prix *= 0.9; // Applique 10 % de réduction
+        }
+    }
 }
